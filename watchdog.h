@@ -30,6 +30,11 @@ private:
         GATEWAY,
         INTERNET
     };
+    enum class RestartState {
+        IDLE,
+        POWER_OFF_WAIT,
+        BOOT_WAIT
+    };
 
     static constexpr const char *GATEWAY_HOST = "192.168.8.1";
 
@@ -81,6 +86,8 @@ private:
 
     binary_sensor::BinarySensor *internet_ok_sensor_{nullptr};
     switch_::Switch *relay_{nullptr};
+    RestartState restart_state_{RestartState::IDLE};
+    uint32_t restart_timer_{0};
 };
 
 }  // namespace watchdog

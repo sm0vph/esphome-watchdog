@@ -209,11 +209,15 @@ void WatchdogComponent::power_cycle() {
     if (relay_ == nullptr)
         return;
 
+    if (restart_state_ != RestartState::IDLE)
+        return;
+
     publish_status("Restarting");
 
     relay_->turn_off();
 
-    // resten kommer i nästa steg
+    restart_timer_ = millis();
+    restart_state_ = RestartState::POWER_OFF_WAIT;
 }
 
 
