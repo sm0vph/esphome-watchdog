@@ -65,6 +65,15 @@ void WatchdogComponent::set_backoff_multiplier(float multiplier) {
 void WatchdogComponent::set_maintenance_mode(bool maintenance_mode) {
     maintenance_mode_ = maintenance_mode;
 }
+void WatchdogComponent::handle_restart_request() {
+    if (maintenance_mode_) {
+        ESP_LOGI(TAG, "Maintenance mode active - restart suppressed");
+        publish_status("Maintenance");
+        return;
+    }
+
+    power_cycle();
+}
 
 
 void WatchdogComponent::setup() {
@@ -150,7 +159,7 @@ void WatchdogComponent::loop() {
 
         restart_state_ = RestartState::IDLE;
 
-        power_cycle();
+        handle_restart_request()
 
         return;
     }
@@ -260,12 +269,7 @@ void WatchdogComponent::loop() {
 
             ESP_LOGW(TAG, "Gateway unreachable");
             
-            if (maintenance_mode_) {
-                ESP_LOGI(TAG, "Maintenance mode active - restart suppressed");
-                publish_status("Maintenance");
-            } else {
-                power_cycle();
-            }
+            handle_restart_request()
         }
 
         return;
@@ -305,12 +309,7 @@ void WatchdogComponent::loop() {
             current_host_ = 0;
 
             
-            if (maintenance_mode_) {
-                ESP_LOGI(TAG, "Maintenance mode active - restart suppressed");
-                publish_status("Maintenance");
-            } else {
-                power_cycle();
-            }
+            handle_restart_request()
         }
     }
 }
