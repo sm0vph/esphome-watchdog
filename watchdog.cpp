@@ -163,6 +163,7 @@ void WatchdogComponent::loop() {
 
             ESP_LOGW(TAG, "Gateway unreachable");
             // Här kommer senare power_cycle();
+            power_cycle();
         }
 
         return;
@@ -200,6 +201,7 @@ void WatchdogComponent::loop() {
             current_host_ = 0;
 
             // Här kommer senare power_cycle();
+            power_cycle();
         }
     }
 }
@@ -213,6 +215,7 @@ void WatchdogComponent::power_cycle() {
 
     // resten kommer i nästa steg
 }
+
 
 }  // namespace watchdog
 }  // namespace esphome
