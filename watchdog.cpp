@@ -167,7 +167,7 @@ void WatchdogComponent::loop() {
 
         restart_state_ = RestartState::IDLE;
 
-        handle_restart_request()
+        handle_restart_request();
 
         return;
     }
@@ -277,7 +277,7 @@ void WatchdogComponent::loop() {
 
             ESP_LOGW(TAG, "Gateway unreachable");
             
-            handle_restart_request()
+            handle_restart_request();
         }
 
         return;
@@ -317,7 +317,7 @@ void WatchdogComponent::loop() {
             current_host_ = 0;
 
             
-            handle_restart_request()
+            handle_restart_request();
         }
     }
 }
