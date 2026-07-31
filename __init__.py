@@ -30,6 +30,10 @@ CONF_BOOT_WAIT_TIME = "boot_wait_time"
 CONF_STARTUP_GRACE_TIME = "startup_grace_time"
 CONF_GATEWAY = "gateway"
 CONF_HOSTS = "hosts"
+CONF_REBOOT_BACKOFF = "reboot_backoff"
+CONF_REBOOT_BACKOFF_INITIAL = "reboot_backoff_initial"
+CONF_REBOOT_BACKOFF_MAX = "reboot_backoff_max"
+CONF_REBOOT_BACKOFF_MULTIPLIER = "reboot_backoff_multiplier"
 
 CONFIG_SCHEMA = cv.Schema(
     {
@@ -56,6 +60,10 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_GATEWAY, default="192.168.1.1"): cv.string,
 
         cv.Optional(CONF_HOSTS,default=["1.1.1.1", "8.8.8.8", "9.9.9.9"],): cv.All(cv.ensure_list(cv.string),cv.Length(min=1),
+        cv.Optional(CONF_REBOOT_BACKOFF, default=True): cv.boolean,
+        cv.Optional(CONF_REBOOT_BACKOFF_INITIAL, default="5min"): cv.positive_time_period_milliseconds,
+        cv.Optional(CONF_REBOOT_BACKOFF_MAX, default="60min"): cv.positive_time_period_milliseconds,
+        cv.Optional(CONF_REBOOT_BACKOFF_MULTIPLIER, default=2.0): cv.float_,
         ),
     }
 ).extend(cv.COMPONENT_SCHEMA)
@@ -96,3 +104,7 @@ async def to_code(config):
     cg.add(var.set_startup_grace_time(config[CONF_STARTUP_GRACE_TIME]))
     cg.add(var.set_gateway(config[CONF_GATEWAY]))
     cg.add(var.set_hosts(config[CONF_HOSTS]))
+    if config[CONF_REBOOT_BACKOFF]:
+        cg.add(var.set_backoff_initial_time(config[CONF_REBOOT_BACKOFF_INITIAL]))
+        cg.add(var.set_backoff_max_time(config[CONF_REBOOT_BACKOFF_MAX]))
+        cg.add(var.set_backoff_multiplier(config[CONF_REBOOT_BACKOFF_MULTIPLIER]))

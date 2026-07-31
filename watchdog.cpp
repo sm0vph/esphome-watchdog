@@ -166,9 +166,19 @@ void WatchdogComponent::loop() {
 
             publish_status("Monitoring");
 
-            restart_state_ = RestartState::IDLE;
             ping_stage_ = PingStage::GATEWAY;
             current_host_ = 0;
+
+            if (current_backoff_time_ > 0) {
+                next_restart_allowed_ = millis() + current_backoff_time_;
+                restart_state_ = RestartState::BACKOFF_WAIT;
+
+                publish_status("Backoff");
+
+                ESP_LOGI(TAG, "Entering backoff for %u ms", current_backoff_time_);
+            } else {
+                restart_state_ = RestartState::IDLE;
+            }
 
             last = millis();
         }
@@ -245,6 +255,8 @@ void WatchdogComponent::loop() {
         publish_status("OK");
         publish_internet_ok(true);
         publish_failure("None");
+        current_backoff_time_ = 0;
+        next_restart_allowed_ = 0;
 
 
         ESP_LOGI(TAG,
@@ -279,8 +291,18 @@ void WatchdogComponent::power_cycle() {
     if (relay_ == nullptr)
         return;
 
-    if (restart_state_ != RestartState::IDLE)
+    if (restart_state_ != RestartState::IDLE &&
+        restart_state_ != RestartState::BACKOFF_WAIT)
         return;
+
+    if (current_backoff_time_ == 0) {
+        // Första omstarten sker direkt
+        current_backoff_time_ = backoff_initial_time_;
+    } else {
+        current_backoff_time_ = std::min(
+            (uint32_t)(current_backoff_time_ * backoff_multiplier_),
+            backoff_max_time_);
+    }
 
     publish_status("Restarting");
 
