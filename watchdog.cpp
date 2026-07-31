@@ -66,13 +66,21 @@ void WatchdogComponent::set_maintenance_mode(bool maintenance_mode) {
     maintenance_mode_ = maintenance_mode;
 }
 void WatchdogComponent::handle_restart_request() {
-    if (maintenance_mode_) {
+    bool maintenance = maintenance_mode_;
+
+    if (maintenance_switch_ != nullptr)
+        maintenance = maintenance_switch_->state;
+
+    if (maintenance)  {
         ESP_LOGI(TAG, "Maintenance mode active - restart suppressed");
         publish_status("Maintenance");
         return;
     }
 
     power_cycle();
+}
+void WatchdogComponent::set_maintenance_switch(switch_::Switch *sw) {
+    maintenance_switch_ = sw;
 }
 
 

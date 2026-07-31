@@ -35,6 +35,7 @@ public:
     void set_backoff_max_time(uint32_t ms);
     void set_backoff_multiplier(float multiplier);
     void set_maintenance_mode(bool maintenance_mode);
+    void set_maintenance_switch(switch_::Switch *sw);
 
 private:
     enum class PingStage {
@@ -116,6 +117,10 @@ private:
     RestartState restart_state_{RestartState::IDLE};
     uint32_t restart_timer_{0};
     uint32_t calculate_backoff() const;
+
+    switch_::Switch *maintenance_switch_{nullptr};
+
+    void set_maintenance_switch(switch_::Switch *sw);
 };
 
 }  // namespace watchdog
