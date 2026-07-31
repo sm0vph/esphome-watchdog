@@ -8,6 +8,7 @@ AUTO_LOAD = [
     "sensor",
     "text_sensor",
     "binary_sensor",
+    "switch",
 ]
 
 watchdog_ns = cg.esphome_ns.namespace("watchdog")

@@ -35,6 +35,11 @@ void WatchdogComponent::setup() {
     ESP_LOGI(TAG, "Watchdog started");
 
     publish_status("Starting");
+    if (relay_ != nullptr) {
+        ESP_LOGI("watchdog", "Relay configured");
+    } else {
+        ESP_LOGI("watchdog", "No relay configured");
+    }
 
     // Callback för varje svar eller timeout
     ping_.on(true, [this](const AsyncPingResponse &response) {
