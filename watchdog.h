@@ -54,6 +54,7 @@ private:
     void publish_latency(uint32_t latency);
     void publish_failure(const char *failure);
     void publish_internet_ok(bool ok);
+    void power_cycle();
 
     AsyncPing ping_;
 

@@ -40,6 +40,11 @@ void WatchdogComponent::setup() {
     } else {
         ESP_LOGI("watchdog", "No relay configured");
     }
+    if (relay_ != nullptr) {
+        relay_->turn_off();
+        delay(1000);
+        relay_->turn_on();
+    }
 
     // Callback för varje svar eller timeout
     ping_.on(true, [this](const AsyncPingResponse &response) {
@@ -197,6 +202,16 @@ void WatchdogComponent::loop() {
             // Här kommer senare power_cycle();
         }
     }
+}
+void WatchdogComponent::power_cycle() {
+    if (relay_ == nullptr)
+        return;
+
+    publish_status("Restarting");
+
+    relay_->turn_off();
+
+    // resten kommer i nästa steg
 }
 
 }  // namespace watchdog
