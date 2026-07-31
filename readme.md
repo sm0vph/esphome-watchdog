@@ -114,7 +114,7 @@ The component exposes:
 Optional:
 
 - Maintenance mode switch
-- Manual restart button
+
 
 ## Maintenance mode
 
@@ -123,7 +123,7 @@ When maintenance mode is enabled:
 - Automatic restarts are disabled.
 - Connectivity monitoring continues.
 - Status information continues to update.
-- Manual restart remains available.
+
 
 ## Backoff
 
