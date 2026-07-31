@@ -227,7 +227,7 @@ void WatchdogComponent::loop() {
 
         ESP_LOGI(TAG,
                  "Internet OK via %s (%u ms)",
-                 INTERNET_HOSTS[current_host_],
+                 hosts_[current_host_].c_str(),
                  ping_latency_);
 
         ping_stage_ = PingStage::GATEWAY;

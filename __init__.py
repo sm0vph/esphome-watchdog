@@ -96,4 +96,3 @@ async def to_code(config):
     cg.add(var.set_startup_grace_time(config[CONF_STARTUP_GRACE_TIME]))
     cg.add(var.set_gateway(config[CONF_GATEWAY]))
     cg.add(var.set_hosts(config[CONF_HOSTS]))
-)
