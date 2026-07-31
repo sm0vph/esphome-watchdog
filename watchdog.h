@@ -36,6 +36,7 @@ public:
     void set_backoff_multiplier(float multiplier);
     void set_maintenance_mode(bool maintenance_mode);
     void set_maintenance_switch(switch_::Switch *sw);
+    void set_ping_interval(uint32_t ms) {ping_interval_ = ms;}
 
 private:
     enum class PingStage {
@@ -102,6 +103,7 @@ private:
 
     uint32_t restart_attempts_{0};
     uint32_t next_restart_allowed_{0};
+    uint32_t ping_interval_{60000};
 
 
     

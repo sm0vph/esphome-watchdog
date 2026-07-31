@@ -249,7 +249,7 @@ void WatchdogComponent::loop() {
     }
 
     // Starta ny ping
-    if (!ping_running_ && millis() - last >= 5000) {
+    if (!ping_running_ && millis() - last >= ping_interval_) {
         last = millis();
 
         if (ping_stage_ == PingStage::GATEWAY) {
