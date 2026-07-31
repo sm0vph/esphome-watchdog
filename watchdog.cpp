@@ -30,6 +30,13 @@ void WatchdogComponent::publish_internet_ok(bool ok) {
     if (internet_ok_sensor_)
         internet_ok_sensor_->publish_state(ok);
 }
+void WatchdogComponent::set_power_off_time(uint32_t ms) {
+    power_off_time_ = ms;
+}
+
+void WatchdogComponent::set_boot_wait_time(uint32_t ms) {
+    boot_wait_time_ = ms;
+}
 
 void WatchdogComponent::setup() {
     ESP_LOGI(TAG, "Watchdog started");
