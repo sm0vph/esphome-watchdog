@@ -5,6 +5,7 @@
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
+#include "esphome/components/switch/switch.h"
 
 namespace esphome {
 namespace watchdog {
@@ -22,6 +23,7 @@ public:
     void set_failure_sensor(text_sensor::TextSensor *sensor) { failure_sensor_ = sensor; }
 
     void set_internet_ok_sensor(binary_sensor::BinarySensor *sensor) { internet_ok_sensor_ = sensor; }
+    void set_relay(switch_::Switch *relay) { relay_ = relay; }
 
 private:
     enum class PingStage {
@@ -77,6 +79,7 @@ private:
     text_sensor::TextSensor *failure_sensor_{nullptr};
 
     binary_sensor::BinarySensor *internet_ok_sensor_{nullptr};
+    switch_::Switch *relay_{nullptr};
 };
 
 }  // namespace watchdog
