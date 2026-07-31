@@ -169,14 +169,20 @@ void WatchdogComponent::loop() {
             ping_stage_ = PingStage::GATEWAY;
             current_host_ = 0;
 
-            if (current_backoff_time_ > 0) {
-                next_restart_allowed_ = millis() + current_backoff_time_;
+            uint32_t delay = calculate_backoff();
+
+            if (delay > 0) {
+
+                next_restart_allowed_ = millis() + delay;
+
                 restart_state_ = RestartState::BACKOFF_WAIT;
 
                 publish_status("Backoff");
 
-                ESP_LOGI(TAG, "Entering backoff for %u ms", current_backoff_time_);
+                ESP_LOGI(TAG, "Entering backoff for %u ms", delay);
+
             } else {
+
                 restart_state_ = RestartState::IDLE;
             }
 
@@ -255,7 +261,7 @@ void WatchdogComponent::loop() {
         publish_status("OK");
         publish_internet_ok(true);
         publish_failure("None");
-        current_backoff_time_ = 0;
+        restart_attempts_ = 0;
         next_restart_allowed_ = 0;
 
 
@@ -287,6 +293,21 @@ void WatchdogComponent::loop() {
         }
     }
 }
+uint32_t WatchdogComponent::calculate_backoff() const {
+
+    if (restart_attempts_ <= 1)
+        return 0;
+
+    uint32_t delay = backoff_initial_time_;
+
+    for (uint32_t i = 2; i < restart_attempts_; i++) {
+        delay = std::min(
+            (uint32_t)(delay * backoff_multiplier_),
+            backoff_max_time_);
+    }
+
+    return delay;
+}
 void WatchdogComponent::power_cycle() {
     if (relay_ == nullptr)
         return;
@@ -295,14 +316,7 @@ void WatchdogComponent::power_cycle() {
         restart_state_ != RestartState::BACKOFF_WAIT)
         return;
 
-    if (current_backoff_time_ == 0) {
-        // Första omstarten sker direkt
-        current_backoff_time_ = backoff_initial_time_;
-    } else {
-        current_backoff_time_ = std::min(
-            (uint32_t)(current_backoff_time_ * backoff_multiplier_),
-            backoff_max_time_);
-    }
+    restart_attempts_++;
 
     publish_status("Restarting");
 

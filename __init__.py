@@ -60,11 +60,11 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_GATEWAY, default="192.168.1.1"): cv.string,
 
         cv.Optional(CONF_HOSTS,default=["1.1.1.1", "8.8.8.8", "9.9.9.9"],): cv.All(cv.ensure_list(cv.string),cv.Length(min=1),
+        ),
         cv.Optional(CONF_REBOOT_BACKOFF, default=True): cv.boolean,
         cv.Optional(CONF_REBOOT_BACKOFF_INITIAL, default="5min"): cv.positive_time_period_milliseconds,
         cv.Optional(CONF_REBOOT_BACKOFF_MAX, default="60min"): cv.positive_time_period_milliseconds,
         cv.Optional(CONF_REBOOT_BACKOFF_MULTIPLIER, default=2.0): cv.float_,
-        ),
     }
 ).extend(cv.COMPONENT_SCHEMA)
 

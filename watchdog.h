@@ -14,6 +14,7 @@ class WatchdogComponent : public Component {
 public:
     void setup() override;
     void loop() override;
+    
 
     void set_latency_sensor(sensor::Sensor *sensor) { latency_sensor_ = sensor; }
     void set_restart_count_sensor(sensor::Sensor *sensor) { restart_count_sensor_ = sensor; }
@@ -96,7 +97,7 @@ private:
     uint32_t backoff_max_time_{3600000};        // 60 min
     float backoff_multiplier_{2.0f};
 
-    uint32_t current_backoff_time_{0};
+    uint32_t restart_attempts_{0};
     uint32_t next_restart_allowed_{0};
 
     
@@ -112,6 +113,7 @@ private:
     switch_::Switch *relay_{nullptr};
     RestartState restart_state_{RestartState::IDLE};
     uint32_t restart_timer_{0};
+    uint32_t calculate_backoff() const;
 };
 
 }  // namespace watchdog
