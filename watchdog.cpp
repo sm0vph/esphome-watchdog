@@ -72,8 +72,8 @@ void WatchdogComponent::setup() {
         ESP_LOGI("watchdog", "No relay configured");
     }
     if (relay_ != nullptr) {
-        relay_->turn_off();
-        delay(1000);
+        //relay_->turn_off();
+        //delay(1000);
         relay_->turn_on();
     }
 
@@ -142,6 +142,8 @@ void WatchdogComponent::loop() {
             return;
 
         ESP_LOGI(TAG, "Backoff expired - restarting modem");
+
+        restart_state_ = RestartState::IDLE;
 
         power_cycle();
 
@@ -316,8 +318,7 @@ void WatchdogComponent::power_cycle() {
     if (relay_ == nullptr)
         return;
 
-    if (restart_state_ != RestartState::IDLE &&
-        restart_state_ != RestartState::BACKOFF_WAIT)
+    if (restart_state_ != RestartState::IDLE)
         return;
 
     
