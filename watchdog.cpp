@@ -253,12 +253,11 @@ void WatchdogComponent::loop() {
    // Starta ny pingomgång
     if (!ping_running_) {
 
-        if (!ping_round_active_) {
+        if (ping_stage_ == PingStage::GATEWAY) {
 
             if (millis() - last < ping_interval_)
                 return;
 
-            ping_round_active_ = true;
             last = millis();
         }
 
