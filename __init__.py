@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 
-from esphome.components import sensor, text_sensor, binary_sensor
+from esphome.components import sensor, text_sensor, binary_sensor, switch
 from esphome.const import CONF_ID, CONF_NAME
 
 AUTO_LOAD = [
@@ -23,6 +23,7 @@ CONF_CURRENT_TARGET = "current_target"
 CONF_LAST_FAILURE = "last_failure"
 CONF_INTERNET_OK = "internet_ok"
 CONF_RESTART_COUNT = "restart_count"
+CONF_RELAY = "relay"
 
 CONFIG_SCHEMA = cv.Schema(
     {
@@ -42,6 +43,7 @@ CONFIG_SCHEMA = cv.Schema(
         ),
 
         cv.Optional(CONF_INTERNET_OK): binary_sensor.binary_sensor_schema(),
+        cv.Optional(CONF_RELAY): cv.use_id(switch.Switch),
     }
 ).extend(cv.COMPONENT_SCHEMA)
 
@@ -73,3 +75,6 @@ async def to_code(config):
     if CONF_INTERNET_OK in config:
         sens = await binary_sensor.new_binary_sensor(config[CONF_INTERNET_OK])
         cg.add(var.set_internet_ok_sensor(sens))
+    if CONF_RELAY in config:
+        relay = await cg.get_variable(config[CONF_RELAY])
+        cg.add(var.set_relay(relay))
