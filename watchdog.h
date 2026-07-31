@@ -24,6 +24,8 @@ public:
 
     void set_internet_ok_sensor(binary_sensor::BinarySensor *sensor) { internet_ok_sensor_ = sensor; }
     void set_relay(switch_::Switch *relay) { relay_ = relay; }
+    void set_power_off_time(uint32_t ms);
+    void set_boot_wait_time(uint32_t ms);
 
 private:
     enum class PingStage {
@@ -79,8 +81,7 @@ private:
     uint32_t power_off_time_{20000};
     uint32_t boot_wait_time_{180000};
 
-    void set_power_off_time(uint32_t ms);
-    void set_boot_wait_time(uint32_t ms);
+    
 
     sensor::Sensor *latency_sensor_{nullptr};
     sensor::Sensor *restart_count_sensor_{nullptr};
