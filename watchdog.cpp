@@ -119,6 +119,18 @@ void WatchdogComponent::loop() {
     }
 
     if (restart_state_ == RestartState::BOOT_WAIT) {
+        if (millis() - restart_timer_ >= 180000) {
+            ESP_LOGI(TAG, "Restart sequence complete");
+
+            publish_status("Monitoring");
+
+            restart_state_ = RestartState::IDLE;
+            ping_stage_ = PingStage::GATEWAY;
+            current_host_ = 0;
+
+            last = millis();
+        }
+
         return;
     }
 
