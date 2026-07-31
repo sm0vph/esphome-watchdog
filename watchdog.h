@@ -30,6 +30,9 @@ public:
     void set_startup_grace_time(uint32_t ms);
     void set_power_off_time(uint32_t ms);
     void set_boot_wait_time(uint32_t ms);
+    void set_backoff_initial_time(uint32_t ms);
+    void set_backoff_max_time(uint32_t ms);
+    void set_backoff_multiplier(float multiplier);
 
 private:
     enum class PingStage {
@@ -88,6 +91,12 @@ private:
     uint32_t startup_grace_time_{30000};
     uint32_t power_off_time_{20000};
     uint32_t boot_wait_time_{180000};
+    uint32_t backoff_initial_time_{300000};     // 5 min
+    uint32_t backoff_max_time_{3600000};        // 60 min
+    float backoff_multiplier_{2.0f};
+
+    uint32_t current_backoff_time_{0};
+    uint32_t next_restart_allowed_{0};
 
     
 
