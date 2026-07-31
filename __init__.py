@@ -2,7 +2,8 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 
 from esphome.components import sensor, text_sensor, binary_sensor, switch
-from esphome.const import CONF_ID, CONF_NAME
+from esphome.const import CONF_ID
+#, CONF_NAME
 
 AUTO_LOAD = [
     "sensor",
