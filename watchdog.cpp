@@ -220,7 +220,7 @@ void WatchdogComponent::loop() {
 
             //last = millis();
             last = millis() - ping_interval_;
-            ping_round_active_ = false;
+            
         }
 
         return;
@@ -249,7 +249,22 @@ void WatchdogComponent::loop() {
 
         ESP_LOGI(TAG, "Grace period finished");
     }
+    // Starta ny ping
+    if (!ping_running_) {
 
+        if (ping_stage_ == PingStage::GATEWAY) {
+
+            if (millis() - last < ping_interval_)
+                return;
+
+            last = millis();
+        }
+
+        if (ping_stage_ == PingStage::GATEWAY)
+            start_ping(gateway_.c_str());
+        else
+            start_ping(hosts_[current_host_].c_str());
+    }
 
     // Vänta tills pingningen är klar
     if (!ping_finished_)
@@ -266,13 +281,17 @@ void WatchdogComponent::loop() {
 
             ping_stage_ = PingStage::INTERNET;
             current_host_ = 0;
+            start_ping(hosts_[0].c_str());
+            return;
+
+
         } else {
             publish_status("Gateway unreachable");
             publish_failure("Gateway unreachable");
             publish_internet_ok(false);
 
             ESP_LOGW(TAG, "Gateway unreachable");
-            ping_round_active_ = false;
+            
             handle_auto_restart_request();
         }
 
@@ -296,7 +315,7 @@ void WatchdogComponent::loop() {
 
         ping_stage_ = PingStage::GATEWAY;
         current_host_ = 0;
-        ping_round_active_ = false;
+        
 
     } else {
 
@@ -312,28 +331,17 @@ void WatchdogComponent::loop() {
 
             ping_stage_ = PingStage::GATEWAY;
             current_host_ = 0;
-            ping_round_active_ = false;
+           
 
             
             handle_auto_restart_request();
-        }
-    }
-    // Starta nästa ping
-    if (!ping_running_) {
+        } else {
 
-        if (ping_stage_ == PingStage::GATEWAY) {
-
-            if (millis() - last < ping_interval_)
-                return;
-
-            last = millis();
-        }
-
-        if (ping_stage_ == PingStage::GATEWAY)
-            start_ping(gateway_.c_str());
-        else
             start_ping(hosts_[current_host_].c_str());
+            return;
+        }
     }
+    
 }
 uint32_t WatchdogComponent::calculate_backoff() const {
 
