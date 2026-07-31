@@ -50,6 +50,17 @@ void WatchdogComponent::set_power_off_time(uint32_t ms) {
 void WatchdogComponent::set_boot_wait_time(uint32_t ms) {
     boot_wait_time_ = ms;
 }
+void WatchdogComponent::set_backoff_initial_time(uint32_t ms) {
+    backoff_initial_time_ = ms;
+}
+
+void WatchdogComponent::set_backoff_max_time(uint32_t ms) {
+    backoff_max_time_ = ms;
+}
+
+void WatchdogComponent::set_backoff_multiplier(float multiplier) {
+    backoff_multiplier_ = multiplier;
+}
 
 void WatchdogComponent::setup() {
     ESP_LOGI(TAG, "Watchdog started");
@@ -125,6 +136,17 @@ void WatchdogComponent::start_ping(const char *host) {
 
 void WatchdogComponent::loop() {
     static uint32_t last = 0;
+    if (restart_state_ == RestartState::BACKOFF_WAIT) {
+
+        if (millis() < next_restart_allowed_)
+            return;
+
+        ESP_LOGI(TAG, "Backoff expired - restarting modem");
+
+        power_cycle();
+
+        return;
+    }
     if (restart_state_ == RestartState::POWER_OFF_WAIT) {
     if (millis() - restart_timer_ >= power_off_time_) {
         ESP_LOGI(TAG, "Power restored");

@@ -41,6 +41,7 @@ private:
     };
     enum class RestartState {
         IDLE,
+        BACKOFF_WAIT,
         POWER_OFF_WAIT,
         BOOT_WAIT
     };
