@@ -105,6 +105,22 @@ void WatchdogComponent::start_ping(const char *host) {
 
 void WatchdogComponent::loop() {
     static uint32_t last = 0;
+    if (restart_state_ == RestartState::POWER_OFF_WAIT) {
+    if (millis() - restart_timer_ >= 20000) {
+        ESP_LOGI(TAG, "Power restored");
+
+        relay_->turn_on();
+
+        restart_timer_ = millis();
+        restart_state_ = RestartState::BOOT_WAIT;
+    }
+
+    return;
+    }
+
+    if (restart_state_ == RestartState::BOOT_WAIT) {
+        return;
+    }
 
     // Vänta tills WiFi är anslutet
     if (!startup_delay_started_) {
