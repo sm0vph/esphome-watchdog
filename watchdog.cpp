@@ -168,7 +168,8 @@ void WatchdogComponent::loop() {
 
             ping_stage_ = PingStage::GATEWAY;
             current_host_ = 0;
-
+            restart_attempts_++;
+            
             uint32_t delay = calculate_backoff();
 
             if (delay > 0) {
@@ -316,8 +317,7 @@ void WatchdogComponent::power_cycle() {
         restart_state_ != RestartState::BACKOFF_WAIT)
         return;
 
-    restart_attempts_++;
-
+    
     publish_status("Restarting");
 
     relay_->turn_off();
