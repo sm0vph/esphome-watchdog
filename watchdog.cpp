@@ -106,7 +106,7 @@ void WatchdogComponent::start_ping(const char *host) {
 void WatchdogComponent::loop() {
     static uint32_t last = 0;
     if (restart_state_ == RestartState::POWER_OFF_WAIT) {
-    if (millis() - restart_timer_ >= 20000) {
+    if (millis() - restart_timer_ >= power_off_time_) {
         ESP_LOGI(TAG, "Power restored");
 
         relay_->turn_on();
@@ -119,7 +119,7 @@ void WatchdogComponent::loop() {
     }
 
     if (restart_state_ == RestartState::BOOT_WAIT) {
-        if (millis() - restart_timer_ >= 180000) {
+        if (millis() - restart_timer_ >= boot_wait_time_) {
             ESP_LOGI(TAG, "Restart sequence complete");
 
             publish_status("Monitoring");
