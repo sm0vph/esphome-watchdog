@@ -169,7 +169,7 @@ void WatchdogComponent::loop() {
             ping_stage_ = PingStage::GATEWAY;
             current_host_ = 0;
             restart_attempts_++;
-            
+
             ESP_LOGI(TAG, "Restart attempt %u", restart_attempts_);
             uint32_t delay = calculate_backoff();
 
@@ -181,7 +181,9 @@ void WatchdogComponent::loop() {
 
                 publish_status("Backoff");
 
-                ESP_LOGI(TAG, "Entering backoff for %u ms", delay);
+                ESP_LOGI(TAG,
+                    "Entering backoff for %.1f s",
+                    delay / 1000.0f);
 
             } else {
 
