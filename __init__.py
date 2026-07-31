@@ -28,6 +28,8 @@ CONF_RELAY = "relay"
 CONF_POWER_OFF_TIME = "power_off_time"
 CONF_BOOT_WAIT_TIME = "boot_wait_time"
 CONF_STARTUP_GRACE_TIME = "startup_grace_time"
+CONF_GATEWAY = "gateway"
+CONF_HOSTS = "hosts"
 
 CONFIG_SCHEMA = cv.Schema(
     {
@@ -51,6 +53,10 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_POWER_OFF_TIME, default="20s"): cv.positive_time_period_milliseconds,
         cv.Optional(CONF_BOOT_WAIT_TIME, default="180s"): cv.positive_time_period_milliseconds,
         cv.Optional(CONF_STARTUP_GRACE_TIME, default="30s"): cv.positive_time_period_milliseconds,
+        cv.Optional(CONF_GATEWAY, default="192.168.1.1"): cv.string,
+
+        cv.Optional(CONF_HOSTS,default=["1.1.1.1", "8.8.8.8", "9.9.9.9"],): cv.All(cv.ensure_list(cv.string),cv.Length(min=1),
+        ),
     }
 ).extend(cv.COMPONENT_SCHEMA)
 
@@ -87,5 +93,7 @@ async def to_code(config):
         cg.add(var.set_relay(relay))
     cg.add(var.set_power_off_time(config[CONF_POWER_OFF_TIME]))
     cg.add(var.set_boot_wait_time(config[CONF_BOOT_WAIT_TIME]))
-    cg.add(var.set_startup_grace_time(config[CONF_STARTUP_GRACE_TIME])
+    cg.add(var.set_startup_grace_time(config[CONF_STARTUP_GRACE_TIME]))
+    cg.add(var.set_gateway(config[CONF_GATEWAY]))
+    cg.add(var.set_hosts(config[CONF_HOSTS]))
 )
