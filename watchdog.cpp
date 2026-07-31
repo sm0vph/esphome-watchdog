@@ -62,23 +62,19 @@ void WatchdogComponent::set_backoff_multiplier(float multiplier) {
     backoff_multiplier_ = multiplier;
 }
 
-void WatchdogComponent::set_maintenance_mode(bool maintenance_mode) {
-    maintenance_mode_ = maintenance_mode;
-}
+
 void WatchdogComponent::handle_restart_request() {
-    bool maintenance = maintenance_mode_;
+    const bool maintenance =
+    maintenance_switch_ != nullptr && maintenance_switch_->state;
 
-    if (maintenance_switch_ != nullptr)
-        maintenance = maintenance_switch_->state;
-
-    if (maintenance)  {
-        ESP_LOGI(TAG, "Maintenance mode active - restart suppressed");
-        publish_status("Maintenance");
+    if (maintenance) {
+        ESP_LOGI(TAG, "Maintenance mode active, skipping power cycle");
         return;
     }
 
-    power_cycle();
-}
+        power_cycle();
+    }
+
 void WatchdogComponent::set_maintenance_switch(switch_::Switch *sw) {
     maintenance_switch_ = sw;
 }

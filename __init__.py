@@ -34,7 +34,6 @@ CONF_REBOOT_BACKOFF = "reboot_backoff"
 CONF_REBOOT_BACKOFF_INITIAL = "reboot_backoff_initial"
 CONF_REBOOT_BACKOFF_MAX = "reboot_backoff_max"
 CONF_REBOOT_BACKOFF_MULTIPLIER = "reboot_backoff_multiplier"
-CONF_MAINTENANCE_MODE = "maintenance_mode"
 CONF_MAINTENANCE_SWITCH = "maintenance_switch"
 
 
@@ -69,7 +68,6 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_REBOOT_BACKOFF_INITIAL, default="5min"): cv.positive_time_period_milliseconds,
         cv.Optional(CONF_REBOOT_BACKOFF_MAX, default="60min"): cv.positive_time_period_milliseconds,
         cv.Optional(CONF_REBOOT_BACKOFF_MULTIPLIER, default=2.0): cv.float_,
-        cv.Optional(CONF_MAINTENANCE_MODE, default=False): cv.boolean,
         cv.Optional(CONF_MAINTENANCE_SWITCH): cv.use_id(switch.Switch),
 
         
@@ -116,7 +114,7 @@ async def to_code(config):
         cg.add(var.set_backoff_initial_time(config[CONF_REBOOT_BACKOFF_INITIAL]))
         cg.add(var.set_backoff_max_time(config[CONF_REBOOT_BACKOFF_MAX]))
         cg.add(var.set_backoff_multiplier(config[CONF_REBOOT_BACKOFF_MULTIPLIER]))
-    cg.add(var.set_maintenance_mode(config[CONF_MAINTENANCE_MODE]))
+    
 
     if CONF_MAINTENANCE_SWITCH in config:
         sw = await cg.get_variable(config[CONF_MAINTENANCE_SWITCH])
