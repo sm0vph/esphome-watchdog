@@ -71,7 +71,7 @@ void WatchdogComponent::handle_auto_restart_request() {
         ESP_LOGI(TAG, "Maintenance mode active, skipping power cycle");
         return;
     }
-
+    restart_attempts_++;
     power_cycle();
 }
 void WatchdogComponent::set_maintenance_switch(switch_::Switch *sw) {
@@ -158,11 +158,20 @@ void WatchdogComponent::loop() {
         if (millis() < next_restart_allowed_)
             return;
 
-        ESP_LOGI(TAG, "Backoff expired - restarting modem");
+        ESP_LOGI(TAG, "Backoff expired - resuming monitoring");
 
         restart_state_ = RestartState::IDLE;
 
-        handle_auto_restart_request();
+        // Börja om med en ny kontroll istället för en ny omstart
+        ping_stage_ = PingStage::GATEWAY;
+        current_host_ = 0;
+
+        ping_running_ = false;
+        ping_finished_ = false;
+        ping_success_ = false;
+        ping_latency_ = 0;
+
+        last = millis();
 
         return;
     }
@@ -187,7 +196,7 @@ void WatchdogComponent::loop() {
 
             ping_stage_ = PingStage::GATEWAY;
             current_host_ = 0;
-            restart_attempts_++;
+            
 
             ESP_LOGI(TAG, "Restart attempt %u", restart_attempts_);
             uint32_t delay = calculate_backoff();
