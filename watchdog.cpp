@@ -218,7 +218,9 @@ void WatchdogComponent::loop() {
                 restart_state_ = RestartState::IDLE;
             }
 
-            last = millis();
+            //last = millis();
+            last = millis() - ping_interval_;
+            ping_round_active_ = false;
         }
 
         return;
@@ -248,15 +250,22 @@ void WatchdogComponent::loop() {
         ESP_LOGI(TAG, "Grace period finished");
     }
 
-    // Starta ny ping
-    if (!ping_running_ && millis() - last >= ping_interval_) {
-        last = millis();
+   // Starta ny pingomgång
+    if (!ping_running_) {
 
-        if (ping_stage_ == PingStage::GATEWAY) {
-            start_ping(gateway_.c_str());
-        } else {
-            start_ping(hosts_[current_host_].c_str());
+        if (!ping_round_active_) {
+
+            if (millis() - last < ping_interval_)
+                return;
+
+            ping_round_active_ = true;
+            last = millis();
         }
+
+        if (ping_stage_ == PingStage::GATEWAY)
+            start_ping(gateway_.c_str());
+        else
+            start_ping(hosts_[current_host_].c_str());
     }
 
     // Vänta tills pingningen är klar
@@ -280,7 +289,7 @@ void WatchdogComponent::loop() {
             publish_internet_ok(false);
 
             ESP_LOGW(TAG, "Gateway unreachable");
-            
+            ping_round_active_ = false;
             handle_auto_restart_request();
         }
 
@@ -304,6 +313,7 @@ void WatchdogComponent::loop() {
 
         ping_stage_ = PingStage::GATEWAY;
         current_host_ = 0;
+        ping_round_active_ = false;
 
     } else {
 
@@ -319,6 +329,7 @@ void WatchdogComponent::loop() {
 
             ping_stage_ = PingStage::GATEWAY;
             current_host_ = 0;
+            ping_round_active_ = false;
 
             
             handle_auto_restart_request();

@@ -104,6 +104,7 @@ private:
     uint32_t restart_attempts_{0};
     uint32_t next_restart_allowed_{0};
     uint32_t ping_interval_{60000};
+    bool ping_round_active_{false};
 
 
     
