@@ -70,7 +70,6 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_REBOOT_BACKOFF_MAX, default="60min"): cv.positive_time_period_milliseconds,
         cv.Optional(CONF_REBOOT_BACKOFF_MULTIPLIER, default=2.0): cv.float_,
         cv.Optional(CONF_MAINTENANCE_MODE, default=False): cv.boolean,
-        cv.Optional(CONF_MAINTENANCE_SWITCH): switch.switch_schema(),
         cv.Optional(CONF_MAINTENANCE_SWITCH): cv.use_id(switch.Switch),
 
         
@@ -120,7 +119,5 @@ async def to_code(config):
     cg.add(var.set_maintenance_mode(config[CONF_MAINTENANCE_MODE]))
 
     if CONF_MAINTENANCE_SWITCH in config:
-        sw = await switch.new_switch(config[CONF_MAINTENANCE_SWITCH])
+        sw = await cg.get_variable(config[CONF_MAINTENANCE_SWITCH])
         cg.add(var.set_maintenance_switch(sw))
-    sw = await cg.get_variable(config[CONF_MAINTENANCE_SWITCH])
-    cg.add(var.set_maintenance_switch(sw))

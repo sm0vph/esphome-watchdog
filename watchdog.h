@@ -73,6 +73,7 @@ private:
     void publish_failure(const char *failure);
     void publish_internet_ok(bool ok);
     void power_cycle();
+    void handle_restart_request();
 
     AsyncPing ping_;
 
@@ -120,7 +121,7 @@ private:
 
     switch_::Switch *maintenance_switch_{nullptr};
 
-    void set_maintenance_switch(switch_::Switch *sw);
+   
 };
 
 }  // namespace watchdog
