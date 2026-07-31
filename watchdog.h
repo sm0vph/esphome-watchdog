@@ -34,6 +34,7 @@ public:
     void set_backoff_initial_time(uint32_t ms);
     void set_backoff_max_time(uint32_t ms);
     void set_backoff_multiplier(float multiplier);
+    void set_maintenance_mode(bool maintenance_mode);
 
 private:
     enum class PingStage {
@@ -99,6 +100,7 @@ private:
 
     uint32_t restart_attempts_{0};
     uint32_t next_restart_allowed_{0};
+    bool maintenance_mode_{false};
 
     
 

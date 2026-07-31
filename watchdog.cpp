@@ -62,6 +62,11 @@ void WatchdogComponent::set_backoff_multiplier(float multiplier) {
     backoff_multiplier_ = multiplier;
 }
 
+void Watchdog::set_maintenance_mode(bool maintenance_mode) {
+    maintenance_mode_ = maintenance_mode;
+}
+
+
 void WatchdogComponent::setup() {
     ESP_LOGI(TAG, "Watchdog started");
 
