@@ -170,6 +170,7 @@ void WatchdogComponent::loop() {
             current_host_ = 0;
             restart_attempts_++;
             
+            ESP_LOGI(TAG, "Restart attempt %u", restart_attempts_);
             uint32_t delay = calculate_backoff();
 
             if (delay > 0) {
