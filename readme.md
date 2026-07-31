@@ -1,6 +1,8 @@
 # ESPHome Internet Watchdog
 
-An ESPHome external component that monitors internet connectivity and automatically power cycles a modem or router when the connection is lost.
+ESPHome Internet Watchdog is an external component that automatically recovers internet connectivity by power cycling a modem or router when connectivity is lost.
+
+It continuously verifies that the local gateway is reachable before testing one or more internet hosts, helping distinguish between local network and upstream connectivity failures.
 
 Designed for ESP8266 devices such as the Shelly Plug S Gen1, but should work with any ESPHome-supported device controlling a relay.
 
