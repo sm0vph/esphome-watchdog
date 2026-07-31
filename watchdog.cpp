@@ -30,6 +30,19 @@ void WatchdogComponent::publish_internet_ok(bool ok) {
     if (internet_ok_sensor_)
         internet_ok_sensor_->publish_state(ok);
 }
+
+void WatchdogComponent::set_gateway(const std::string &gateway) {
+    gateway_ = gateway;
+}
+
+void WatchdogComponent::set_hosts(const std::vector<std::string> &hosts) {
+    hosts_ = hosts;
+}
+
+void WatchdogComponent::set_startup_grace_time(uint32_t ms) {
+    startup_grace_time_ = ms;
+}
+
 void WatchdogComponent::set_power_off_time(uint32_t ms) {
     power_off_time_ = ms;
 }
@@ -155,7 +168,7 @@ void WatchdogComponent::loop() {
 
     // Grace period
     if (!startup_completed_) {
-        if (millis() - startup_delay_ms_ < 30000)
+        if (millis() - startup_delay_ms_ < startup_grace_time_)
             return;
 
         startup_completed_ = true;
@@ -170,9 +183,9 @@ void WatchdogComponent::loop() {
         last = millis();
 
         if (ping_stage_ == PingStage::GATEWAY) {
-            start_ping(GATEWAY_HOST);
+            start_ping(gateway_.c_str());
         } else {
-            start_ping(INTERNET_HOSTS[current_host_]);
+            start_ping(hosts_[current_host_].c_str());
         }
     }
 
@@ -224,7 +237,7 @@ void WatchdogComponent::loop() {
 
         current_host_++;
 
-        if (current_host_ >= INTERNET_HOST_COUNT) {
+        if (current_host_ >= hosts_.size()) {
 
             publish_status("Internet unreachable");
             publish_failure("Internet unreachable");

@@ -24,6 +24,10 @@ public:
 
     void set_internet_ok_sensor(binary_sensor::BinarySensor *sensor) { internet_ok_sensor_ = sensor; }
     void set_relay(switch_::Switch *relay) { relay_ = relay; }
+    void set_gateway(const std::string &gateway);
+    void set_hosts(const std::vector<std::string> &hosts);
+
+    void set_startup_grace_time(uint32_t ms);
     void set_power_off_time(uint32_t ms);
     void set_boot_wait_time(uint32_t ms);
 
@@ -38,21 +42,21 @@ private:
         BOOT_WAIT
     };
 
-    static constexpr const char *GATEWAY_HOST = "192.168.8.1";
+    //static constexpr const char *GATEWAY_HOST = "192.168.8.1";
 
     //static constexpr const char *INTERNET_HOSTS[] = {
     //    "1.1.1.1",
     //    "8.8.8.8",
     //    "9.9.9.9"
     //};
-    static constexpr const char *INTERNET_HOSTS[] = {
-        "10.255.255.1",
-        "10.255.255.2",
-        "10.255.255.3"
-    };
+    //static constexpr const char *INTERNET_HOSTS[] = {
+    //    "10.255.255.1",
+    //    "10.255.255.2",
+    //    "10.255.255.3"
+    //};
 
-    static constexpr size_t INTERNET_HOST_COUNT =
-        sizeof(INTERNET_HOSTS) / sizeof(INTERNET_HOSTS[0]);
+    //static constexpr size_t INTERNET_HOST_COUNT =
+    //    sizeof(INTERNET_HOSTS) / sizeof(INTERNET_HOSTS[0]);
 
     void start_ping(const char *host);
 
@@ -78,6 +82,10 @@ private:
     bool ping_success_{false};
 
     uint32_t ping_latency_{0};
+    std::string gateway_;
+    std::vector<std::string> hosts_;
+
+    uint32_t startup_grace_time_{30000};
     uint32_t power_off_time_{20000};
     uint32_t boot_wait_time_{180000};
 
