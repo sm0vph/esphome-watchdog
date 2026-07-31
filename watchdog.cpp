@@ -259,8 +259,13 @@ void WatchdogComponent::loop() {
             publish_internet_ok(false);
 
             ESP_LOGW(TAG, "Gateway unreachable");
-            // Här kommer senare power_cycle();
-            power_cycle();
+            
+            if (maintenance_mode_) {
+                ESP_LOGI(TAG, "Maintenance mode active - restart suppressed");
+                publish_status("Maintenance");
+            } else {
+                power_cycle();
+            }
         }
 
         return;
@@ -299,8 +304,13 @@ void WatchdogComponent::loop() {
             ping_stage_ = PingStage::GATEWAY;
             current_host_ = 0;
 
-            // Här kommer senare power_cycle();
-            power_cycle();
+            
+            if (maintenance_mode_) {
+                ESP_LOGI(TAG, "Maintenance mode active - restart suppressed");
+                publish_status("Maintenance");
+            } else {
+                power_cycle();
+            }
         }
     }
 }
