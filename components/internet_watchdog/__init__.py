@@ -39,6 +39,7 @@ CONF_REBOOT_BACKOFF_MULTIPLIER = "reboot_backoff_multiplier"
 CONF_MAINTENANCE_SWITCH = "maintenance_switch"
 CONF_PING_INTERVAL = "ping_interval"
 CONF_FAILURE_THRESHOLD = "failure_threshold"
+CONF_WIFI_CONNECT_TIMEOUT = "wifi_connect_timeout"
 
 
 
@@ -77,6 +78,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_MAINTENANCE_SWITCH): cv.use_id(switch.Switch),
         cv.Optional(CONF_PING_INTERVAL, default="60s"): cv.positive_time_period_milliseconds,
         cv.Optional(CONF_FAILURE_THRESHOLD, default=2): cv.positive_int,
+        cv.Optional(CONF_WIFI_CONNECT_TIMEOUT, default="7min"): cv.positive_time_period_milliseconds,
 
 
         
@@ -121,6 +123,7 @@ async def to_code(config):
     cg.add(var.set_hosts(config[CONF_HOSTS]))
     cg.add(var.set_ping_interval(config[CONF_PING_INTERVAL]))
     cg.add(var.set_failure_threshold(config[CONF_FAILURE_THRESHOLD]))
+    cg.add(var.set_wifi_connect_timeout(config[CONF_WIFI_CONNECT_TIMEOUT]))
     cg.add(var.set_reboot_backoff(config[CONF_REBOOT_BACKOFF]))
     if config[CONF_REBOOT_BACKOFF]:
         cg.add(var.set_backoff_initial_time(config[CONF_REBOOT_BACKOFF_INITIAL]))

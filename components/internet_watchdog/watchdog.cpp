@@ -122,6 +122,7 @@ void WatchdogComponent::set_maintenance_switch(switch_::Switch *sw) {
 
 void WatchdogComponent::setup() {
     ESP_LOGI(TAG, "Watchdog started");
+    next_wifi_failure_check_ = millis() + wifi_connect_timeout_;
 
     publish_status("Starting");
     if (relay_ != nullptr) {
@@ -232,6 +233,7 @@ void WatchdogComponent::loop() {
         relay_->turn_on();
 
         restart_timer_ = millis();
+        next_wifi_failure_check_ = restart_timer_ + wifi_connect_timeout_;
         restart_state_ = RestartState::BOOT_WAIT;
     }
 
@@ -278,8 +280,18 @@ void WatchdogComponent::loop() {
 
     // Vänta tills WiFi är anslutet
     if (!startup_delay_started_) {
-        if (!WiFi.isConnected())
+        if (!WiFi.isConnected()) {
+            if (static_cast<int32_t>(millis() - next_wifi_failure_check_) < 0)
+                return;
+
+            ESP_LOGW(TAG, "WiFi connection timeout");
+            publish_status("WiFi unavailable");
+            publish_failure("WiFi unavailable");
+            publish_internet_ok(false);
+            handle_auto_restart_request();
+            next_wifi_failure_check_ = millis() + ping_interval_;
             return;
+        }
 
         startup_delay_started_ = true;
         startup_delay_ms_ = millis();

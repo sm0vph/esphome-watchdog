@@ -42,6 +42,7 @@ public:
     void set_ping_interval(uint32_t ms) {ping_interval_ = ms;}
     void set_reboot_backoff(bool enabled) { reboot_backoff_ = enabled; }
     void set_failure_threshold(uint32_t threshold) { failure_threshold_ = threshold; }
+    void set_wifi_connect_timeout(uint32_t ms) { wifi_connect_timeout_ = ms; }
 
 private:
     enum class PingStage {
@@ -108,6 +109,8 @@ private:
     bool reboot_backoff_{true};
     uint32_t failure_threshold_{2};
     uint32_t consecutive_failure_rounds_{0};
+    uint32_t wifi_connect_timeout_{420000};  // 7 min
+    uint32_t next_wifi_failure_check_{0};
 
     uint32_t restart_attempts_{0};
     uint32_t next_restart_allowed_{0};
