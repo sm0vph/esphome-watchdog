@@ -67,13 +67,28 @@ void WatchdogComponent::handle_auto_restart_request() {
     const bool maintenance =
         maintenance_switch_ != nullptr && maintenance_switch_->state;
 
+    restart_attempts_++;
+
     if (maintenance) {
         ESP_LOGI(TAG, "Maintenance mode active, skipping power cycle");
+
+        // Vänta till nästa övervakningsomgång
+        ping_stage_ = PingStage::GATEWAY;
+        current_host_ = 0;
+        ping_running_ = false;
+        ping_finished_ = false;
+        ping_success_ = false;
+        ping_latency_ = 0;
+
+        last_ping_time_ = millis();
+
         return;
     }
-    restart_attempts_++;
+
     power_cycle();
 }
+
+
 void WatchdogComponent::set_maintenance_switch(switch_::Switch *sw) {
     maintenance_switch_ = sw;
 }
@@ -152,7 +167,7 @@ void WatchdogComponent::start_ping(const char *host) {
 }
 
 void WatchdogComponent::loop() {
-    static uint32_t last = 0;
+    
     if (restart_state_ == RestartState::BACKOFF_WAIT) {
 
         if (millis() < next_restart_allowed_)
@@ -171,7 +186,7 @@ void WatchdogComponent::loop() {
         ping_success_ = false;
         ping_latency_ = 0;
 
-        last = millis() - ping_interval_;
+        last_ping_time_ = millis() - ping_interval_;
 
         return;
     }
@@ -219,7 +234,7 @@ void WatchdogComponent::loop() {
             }
 
             //last = millis();
-            last = millis() - ping_interval_;
+            last_ping_time_ = millis() - ping_interval_;
             
         }
 
@@ -254,10 +269,10 @@ void WatchdogComponent::loop() {
         !ping_finished_ &&
         ping_stage_ == PingStage::GATEWAY) {
 
-        if (millis() - last < ping_interval_)
+        if (millis() - last_ping_time_ < ping_interval_)
             return;
 
-        last = millis();
+        last_ping_time_ = millis();
         start_ping(gateway_.c_str());
         return;
     }
@@ -311,7 +326,7 @@ void WatchdogComponent::loop() {
 
         ping_stage_ = PingStage::GATEWAY;
         current_host_ = 0;
-        last = millis();
+        last_ping_time_ = millis();
         return;
         
 
