@@ -1,5 +1,6 @@
 #include "watchdog.h"
 #include "esphome/core/log.h"
+#include "esphome/core/application.h"
 #ifdef USE_ESP8266
 #include <ESP8266WiFi.h>
 #elif defined(USE_ESP32)
@@ -123,6 +124,8 @@ void WatchdogComponent::set_maintenance_switch(switch_::Switch *sw) {
 void WatchdogComponent::setup() {
     ESP_LOGI(TAG, "Watchdog started");
     next_wifi_failure_check_ = millis() + wifi_connect_timeout_;
+    wifi_reboot_pref_ = global_preferences->make_preference<bool>(0x9C17D4A1);
+    wifi_reboot_pref_.load(&wifi_reboot_attempted_);
 
     publish_status("Starting");
     if (relay_ != nullptr) {
@@ -279,19 +282,41 @@ void WatchdogComponent::loop() {
     }
 
     // Vänta tills WiFi är anslutet
-    if (!startup_delay_started_) {
-        if (!WiFi.isConnected()) {
-            if (static_cast<int32_t>(millis() - next_wifi_failure_check_) < 0)
-                return;
+    if (!WiFi.isConnected()) {
+        if (static_cast<int32_t>(millis() - next_wifi_failure_check_) < 0)
+            return;
 
-            ESP_LOGW(TAG, "WiFi connection timeout");
-            publish_status("WiFi unavailable");
-            publish_failure("WiFi unavailable");
-            publish_internet_ok(false);
-            handle_auto_restart_request();
-            next_wifi_failure_check_ = millis() + ping_interval_;
+        ESP_LOGW(TAG, "WiFi connection timeout");
+        publish_status("WiFi unavailable");
+        publish_failure("WiFi unavailable");
+        publish_internet_ok(false);
+
+        const bool maintenance =
+            maintenance_switch_ != nullptr && maintenance_switch_->state;
+        if (!maintenance && wifi_reboot_before_power_cycle_ && !wifi_reboot_attempted_) {
+            ESP_LOGW(TAG, "Restarting device once before power cycling relay");
+            wifi_reboot_attempted_ = true;
+            wifi_reboot_pref_.save(&wifi_reboot_attempted_);
+            global_preferences->sync();
+            App.safe_reboot();
             return;
         }
+
+        handle_auto_restart_request();
+        next_wifi_failure_check_ = millis() + ping_interval_;
+        return;
+    }
+
+    // Start a new timeout window if Wi-Fi is lost later.
+    next_wifi_failure_check_ = millis() + wifi_connect_timeout_;
+
+    if (wifi_reboot_attempted_) {
+        wifi_reboot_attempted_ = false;
+        wifi_reboot_pref_.save(&wifi_reboot_attempted_);
+        global_preferences->sync();
+    }
+
+    if (!startup_delay_started_) {
 
         startup_delay_started_ = true;
         startup_delay_ms_ = millis();

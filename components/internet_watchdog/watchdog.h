@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "esphome/core/component.h"
+#include "esphome/core/preferences.h"
 #include <AsyncPing.h>
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
@@ -43,6 +44,7 @@ public:
     void set_reboot_backoff(bool enabled) { reboot_backoff_ = enabled; }
     void set_failure_threshold(uint32_t threshold) { failure_threshold_ = threshold; }
     void set_wifi_connect_timeout(uint32_t ms) { wifi_connect_timeout_ = ms; }
+    void set_wifi_reboot_before_power_cycle(bool enabled) { wifi_reboot_before_power_cycle_ = enabled; }
 
 private:
     enum class PingStage {
@@ -111,6 +113,9 @@ private:
     uint32_t consecutive_failure_rounds_{0};
     uint32_t wifi_connect_timeout_{420000};  // 7 min
     uint32_t next_wifi_failure_check_{0};
+    bool wifi_reboot_before_power_cycle_{true};
+    bool wifi_reboot_attempted_{false};
+    ESPPreferenceObject wifi_reboot_pref_;
 
     uint32_t restart_attempts_{0};
     uint32_t next_restart_allowed_{0};

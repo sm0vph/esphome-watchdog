@@ -60,6 +60,7 @@ internet_watchdog:
   ping_interval: 2min
   failure_threshold: 2
   wifi_connect_timeout: 7min
+  wifi_reboot_before_power_cycle: true
 
   maintenance_switch: maintenance_switch
 

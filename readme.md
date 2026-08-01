@@ -22,37 +22,31 @@ Designed for ESP8266 devices such as the Shelly Plug S Gen1, but should work wit
 
 ## How it works
 
-The watchdog performs the following sequence:
+At startup, the watchdog waits for Wi-Fi and then observes the startup grace period before it begins monitoring. After a relay power cycle, it waits for the configured boot time before testing again.
 
 ```
-Wait for ping interval
-        │
-        ▼
-Ping gateway
-        │
-        ├── Failed
-        │      ▼
-        │   Restart modem/router
-        │
-        └── OK
-               ▼
-        Ping internet host(s)
-               │
-               ├── Success
-               │      ▼
-               │   Continue monitoring
-               │
-               └── Failed
-                      ▼
-               Restart modem/router
+Wi-Fi available?
+  |
+  +-- No --> wait wifi_connect_timeout
+  |              |
+  |              +-- restart the ESP once (optional)
+  |              +-- still unavailable --> record a failed round
+  |
+  +-- Yes --> Ping gateway
+                  |
+                  +-- Failed --> record a failed round
+                  |
+                  +-- OK --> Ping internet host(s)
+                               |
+                               +-- Any success --> reset failure and restart counters
+                               |
+                               +-- All fail --> record a failed round
+
+Failed round --> below failure_threshold --> try again later
+              threshold reached --> power-cycle relay
 ```
 
-After a restart the watchdog:
-
-1. Waits for the relay power-off time.
-2. Waits for the configured boot time.
-3. Waits according to the exponential backoff timer.
-4. Tests connectivity again before deciding whether another restart is required.
+After a relay power cycle, the watchdog waits for the configured power-off and boot times. Repeated relay cycles use exponential backoff up to `reboot_backoff_max`, and monitoring continues until connectivity is restored.
 
 ## Installation
 
@@ -82,6 +76,7 @@ internet_watchdog:
   ping_interval: 60s
   failure_threshold: 2
   wifi_connect_timeout: 7min
+  wifi_reboot_before_power_cycle: true
 
   reboot_backoff: true
   reboot_backoff_initial: 30s
@@ -106,6 +101,7 @@ internet_watchdog:
 | `ping_interval` | Time between complete monitoring cycles. Each cycle checks the gateway first, then one or more Internet hosts if the gateway is reachable. |
 | `failure_threshold` | Number of consecutive failed monitoring cycles required before a power cycle (default: `2`) |
 | `wifi_connect_timeout` | How long to wait for Wi-Fi after startup or power restoration before recording a failed monitoring cycle (default: `7min`) |
+| `wifi_reboot_before_power_cycle` | Restart the ESP once after a Wi-Fi timeout before treating it as a router failure (default: `true`) |
 | `reboot_backoff` | Enable exponential backoff |
 | `reboot_backoff_initial` | Initial backoff delay |
 | `reboot_backoff_multiplier` | Backoff multiplier |
