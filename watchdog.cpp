@@ -171,7 +171,7 @@ void WatchdogComponent::loop() {
         ping_success_ = false;
         ping_latency_ = 0;
 
-        last = millis();
+        last = millis() - ping_interval_;
 
         return;
     }
@@ -249,22 +249,7 @@ void WatchdogComponent::loop() {
 
         ESP_LOGI(TAG, "Grace period finished");
     }
-    // Starta ny ping
-    if (!ping_running_) {
-
-        if (ping_stage_ == PingStage::GATEWAY) {
-
-            if (millis() - last < ping_interval_)
-                return;
-
-            last = millis();
-        }
-
-        if (ping_stage_ == PingStage::GATEWAY)
-            start_ping(gateway_.c_str());
-        else
-            start_ping(hosts_[current_host_].c_str());
-    }
+    
 
     // Vänta tills pingningen är klar
     if (!ping_finished_)
@@ -335,11 +320,28 @@ void WatchdogComponent::loop() {
 
             
             handle_auto_restart_request();
+            return;
         } else {
 
             start_ping(hosts_[current_host_].c_str());
             return;
         }
+    }
+    // Starta ny ping
+    if (!ping_running_) {
+
+        if (ping_stage_ == PingStage::GATEWAY) {
+
+            if (millis() - last < ping_interval_)
+                return;
+
+            last = millis();
+        }
+
+        if (ping_stage_ == PingStage::GATEWAY)
+            start_ping(gateway_.c_str());
+        else
+            start_ping(hosts_[current_host_].c_str());
     }
     
 }
