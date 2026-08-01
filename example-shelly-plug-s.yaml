@@ -1,0 +1,100 @@
+# Example configuration for a Shelly Plug S used as an Internet watchdog.
+# GPIO assignments are for Shelly Plug S Gen1 (ESP8266).
+
+substitutions:
+  devicename: internet-watchdog
+
+esphome:
+  name: ${devicename}
+  friendly_name: Internet Watchdog
+  libraries:
+    - ESP8266WiFi
+    - AsyncPing=https://github.com/akaJes/AsyncPing#95ac7e4
+
+esp8266:
+  board: esp8285
+
+external_components:
+  - source: github://sm0vph/esphome-watchdog
+
+logger:
+
+api:
+
+ota:
+  - platform: web_server
+
+web_server:
+
+wifi:
+  ssid: "YOUR_WIFI"
+  password: "YOUR_PASSWORD"
+
+captive_portal:
+
+time:
+  - platform: sntp
+
+watchdog:
+  id: internet_watchdog
+
+  relay: relay
+
+  gateway: 192.168.1.1
+
+  hosts:
+    - 1.1.1.1
+    - 8.8.8.8
+    - 9.9.9.9
+
+  startup_grace_time: 180s
+  power_off_time: 20s
+  boot_wait_time: 180s
+
+  reboot_backoff: true
+  reboot_backoff_initial: 1min
+  reboot_backoff_max: 6h
+  reboot_backoff_multiplier: 3
+
+  ping_interval: 2min
+
+  maintenance_switch: maintenance_switch
+
+  status:
+    name: Watchdog Status
+
+  latency:
+    name: Latency
+
+  current_target:
+    name: Current Target
+
+  last_failure:
+    name: Last Failure
+
+  internet_ok:
+    name: Internet OK
+
+  restart_count:
+    name: Restart Count
+
+button:
+  - platform: template
+    name: Restart modem
+    icon: mdi:restart
+    on_press:
+      - switch.turn_off: relay
+      - delay: 20s
+      - switch.turn_on: relay
+
+switch:
+  - platform: gpio
+    id: relay
+    name: Relay
+    pin: GPIO15
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
+    id: maintenance_switch
+    name: Maintenance mode
+    optimistic: true
