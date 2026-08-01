@@ -58,7 +58,6 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_RESTART_COUNT): sensor.sensor_schema(
             accuracy_decimals=0,
             icon="mdi:restart",
-            entity_category="diagnostic",
         ),
 
         cv.Optional(CONF_INTERNET_OK): binary_sensor.binary_sensor_schema(),
