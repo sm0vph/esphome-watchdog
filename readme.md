@@ -60,7 +60,7 @@ Add the external component to your ESPHome configuration.
 
 ```yaml
 external_components:
-  - source: github://sm0vph/esphome-watchdog
+  - source: github://sm0vph/esphome-watchdog@v1.0.0
 ```
 
 ## Example configuration
