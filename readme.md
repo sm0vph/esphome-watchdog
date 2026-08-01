@@ -1,4 +1,4 @@
-# ESPHome Internet Watchdog
+# ESPHome Internet Watchdog  
 
 ESPHome Internet Watchdog is an external component that automatically recovers internet connectivity by power cycling a modem or router when connectivity is lost.
 
