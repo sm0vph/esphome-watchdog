@@ -41,6 +41,7 @@ public:
     void set_maintenance_switch(switch_::Switch *sw);
     void set_ping_interval(uint32_t ms) {ping_interval_ = ms;}
     void set_reboot_backoff(bool enabled) { reboot_backoff_ = enabled; }
+    void set_failure_threshold(uint32_t threshold) { failure_threshold_ = threshold; }
 
 private:
     enum class PingStage {
@@ -105,6 +106,8 @@ private:
     uint32_t backoff_max_time_{3600000};        // 60 min
     float backoff_multiplier_{2.0f};
     bool reboot_backoff_{true};
+    uint32_t failure_threshold_{2};
+    uint32_t consecutive_failure_rounds_{0};
 
     uint32_t restart_attempts_{0};
     uint32_t next_restart_allowed_{0};

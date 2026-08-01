@@ -71,6 +71,8 @@ void WatchdogComponent::handle_auto_restart_request() {
     const bool maintenance =
         maintenance_switch_ != nullptr && maintenance_switch_->state;
 
+    consecutive_failure_rounds_++;
+
     if (maintenance) {
         ESP_LOGI(TAG, "Maintenance mode active, skipping power cycle");
 
@@ -86,6 +88,24 @@ void WatchdogComponent::handle_auto_restart_request() {
 
         return;
     }
+
+    if (consecutive_failure_rounds_ < failure_threshold_) {
+        ESP_LOGW(TAG,
+                 "Failure round %u/%u, waiting before restart",
+                 consecutive_failure_rounds_,
+                 failure_threshold_);
+
+        ping_stage_ = PingStage::GATEWAY;
+        current_host_ = 0;
+        ping_running_ = false;
+        ping_finished_ = false;
+        ping_success_ = false;
+        ping_latency_ = 0;
+        last_ping_time_ = millis();
+        return;
+    }
+
+    consecutive_failure_rounds_ = 0;
 
     restart_attempts_++;
     if (restart_count_sensor_)
@@ -331,6 +351,7 @@ void WatchdogComponent::loop() {
         publish_internet_ok(true);
         publish_failure("None");
         restart_attempts_ = 0;
+        consecutive_failure_rounds_ = 0;
         if (restart_count_sensor_)
             restart_count_sensor_->publish_state(0);
         next_restart_allowed_ = 0;

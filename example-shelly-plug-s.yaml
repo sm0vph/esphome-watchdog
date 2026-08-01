@@ -58,6 +58,7 @@ internet_watchdog:
   reboot_backoff_multiplier: 3
 
   ping_interval: 2min
+  failure_threshold: 2
 
   maintenance_switch: maintenance_switch
 

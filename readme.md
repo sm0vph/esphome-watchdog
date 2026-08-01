@@ -80,6 +80,7 @@ internet_watchdog:
   power_off_time: 10s
   boot_wait_time: 90s
   ping_interval: 60s
+  failure_threshold: 2
 
   reboot_backoff: true
   reboot_backoff_initial: 30s
@@ -102,6 +103,7 @@ internet_watchdog:
 | `power_off_time` | How long relay remains off |
 | `boot_wait_time` | Time to wait after power is restored |
 | `ping_interval` | Time between complete monitoring cycles. Each cycle checks the gateway first, then one or more Internet hosts if the gateway is reachable. |
+| `failure_threshold` | Number of consecutive failed monitoring cycles required before a power cycle (default: `2`) |
 | `reboot_backoff` | Enable exponential backoff |
 | `reboot_backoff_initial` | Initial backoff delay |
 | `reboot_backoff_multiplier` | Backoff multiplier |
