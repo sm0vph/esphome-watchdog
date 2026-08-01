@@ -57,6 +57,8 @@ CONFIG_SCHEMA = cv.Schema(
 
         cv.Optional(CONF_RESTART_COUNT): sensor.sensor_schema(
             accuracy_decimals=0,
+            icon="mdi:restart",
+            entity_category="diagnostic",
         ),
 
         cv.Optional(CONF_INTERNET_OK): binary_sensor.binary_sensor_schema(),
@@ -125,5 +127,5 @@ async def to_code(config):
     if CONF_MAINTENANCE_SWITCH in config:
         sw = await cg.get_variable(config[CONF_MAINTENANCE_SWITCH])
         cg.add(var.set_maintenance_switch(sw))
-    cg.add(var.set_ping_interval(config[CONF_PING_INTERVAL]))
+    
 
