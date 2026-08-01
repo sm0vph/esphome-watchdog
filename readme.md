@@ -78,11 +78,14 @@ watchdog:
   startup_grace_time: 2min
   power_off_time: 10s
   boot_wait_time: 90s
+  ping_interval: 60s
 
   reboot_backoff: true
   reboot_backoff_initial: 30s
   reboot_backoff_multiplier: 2
   reboot_backoff_max: 10min
+
+  
 
   maintenance_switch: modem_maintenance
 ```
@@ -97,6 +100,7 @@ watchdog:
 | `startup_grace_time` | Ignore failures after boot |
 | `power_off_time` | How long relay remains off |
 | `boot_wait_time` | Time to wait after power is restored |
+| `ping_interval` | Time between complete monitoring cycles. Each cycle checks the gateway first, then one or more Internet hosts if the gateway is reachable. |
 | `reboot_backoff` | Enable exponential backoff |
 | `reboot_backoff_initial` | Initial backoff delay |
 | `reboot_backoff_multiplier` | Backoff multiplier |
