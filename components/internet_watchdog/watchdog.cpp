@@ -7,7 +7,7 @@
 #endif
 
 namespace esphome {
-namespace watchdog {
+namespace internet_watchdog {
 
 static const char *const TAG = "watchdog";
 void WatchdogComponent::publish_status(const char *status) {
@@ -410,5 +410,5 @@ void WatchdogComponent::power_cycle() {
 }
 
 
-}  // namespace watchdog
+}  // namespace internet_watchdog
 }  // namespace esphome

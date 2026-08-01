@@ -16,6 +16,7 @@ esp8266:
 
 external_components:
   - source: github://sm0vph/esphome-watchdog@main
+    components: [internet_watchdog]
 
 logger:
 
@@ -35,7 +36,7 @@ captive_portal:
 time:
   - platform: sntp
 
-watchdog:
+internet_watchdog:
   id: internet_watchdog
 
   relay: relay

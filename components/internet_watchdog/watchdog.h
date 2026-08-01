@@ -12,7 +12,7 @@
 #include "esphome/components/switch/switch.h"
 
 namespace esphome {
-namespace watchdog {
+namespace internet_watchdog {
 
 class WatchdogComponent : public Component {
 public:
@@ -133,5 +133,5 @@ private:
    
 };
 
-}  // namespace watchdog
+}  // namespace internet_watchdog
 }  // namespace esphome

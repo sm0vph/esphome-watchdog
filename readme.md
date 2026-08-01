@@ -61,12 +61,13 @@ Add the external component to your ESPHome configuration.
 ```yaml
 external_components:
   - source: github://sm0vph/esphome-watchdog@main
+    components: [internet_watchdog]
 ```
 
 ## Example configuration
 
 ```yaml
-watchdog:
+internet_watchdog:
   relay: modem_power
 
   gateway: 192.168.1.1

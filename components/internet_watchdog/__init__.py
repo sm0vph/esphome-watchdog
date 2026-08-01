@@ -13,9 +13,9 @@ AUTO_LOAD = [
 
 ]
 
-watchdog_ns = cg.esphome_ns.namespace("watchdog")
+internet_watchdog_ns = cg.esphome_ns.namespace("internet_watchdog")
 
-WatchdogComponent = watchdog_ns.class_(
+WatchdogComponent = internet_watchdog_ns.class_(
     "WatchdogComponent",
     cg.Component,
 )
