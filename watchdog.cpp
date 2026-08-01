@@ -68,6 +68,8 @@ void WatchdogComponent::handle_auto_restart_request() {
         maintenance_switch_ != nullptr && maintenance_switch_->state;
 
     restart_attempts_++;
+    if (restart_count_sensor_)
+        restart_count_sensor_->publish_state(restart_attempts_);
 
     if (maintenance) {
         ESP_LOGI(TAG, "Maintenance mode active, skipping power cycle");
@@ -103,6 +105,9 @@ void WatchdogComponent::setup() {
     } else {
         ESP_LOGI("watchdog", "No relay configured");
     }
+    if (restart_count_sensor_)
+        restart_count_sensor_->publish_state(0);
+    
     if (relay_ != nullptr) {
         //relay_->turn_off();
         //delay(1000);
@@ -163,7 +168,12 @@ void WatchdogComponent::start_ping(const char *host) {
                  (unsigned) current_host_, host);
     }
 
-    ping_.begin(host, 1, 1000);
+    //ping_.begin(host, 1, 1000);
+    if (!ping_.begin(host, 1, 1000)) {
+        ESP_LOGE(TAG, "Failed to start ping");
+        ping_running_ = false;
+        ping_finished_ = true;
+    }
 }
 
 void WatchdogComponent::loop() {
@@ -316,6 +326,8 @@ void WatchdogComponent::loop() {
         publish_internet_ok(true);
         publish_failure("None");
         restart_attempts_ = 0;
+        if (restart_count_sensor_)
+            restart_count_sensor_->publish_state(0);
         next_restart_allowed_ = 0;
 
 
