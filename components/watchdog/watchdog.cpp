@@ -1,6 +1,10 @@
 #include "watchdog.h"
 #include "esphome/core/log.h"
+#ifdef USE_ESP8266
 #include <ESP8266WiFi.h>
+#elif defined(USE_ESP32)
+#include <WiFi.h>
+#endif
 
 namespace esphome {
 namespace watchdog {
@@ -67,10 +71,6 @@ void WatchdogComponent::handle_auto_restart_request() {
     const bool maintenance =
         maintenance_switch_ != nullptr && maintenance_switch_->state;
 
-    restart_attempts_++;
-    if (restart_count_sensor_)
-        restart_count_sensor_->publish_state(restart_attempts_);
-
     if (maintenance) {
         ESP_LOGI(TAG, "Maintenance mode active, skipping power cycle");
 
@@ -86,6 +86,10 @@ void WatchdogComponent::handle_auto_restart_request() {
 
         return;
     }
+
+    restart_attempts_++;
+    if (restart_count_sensor_)
+        restart_count_sensor_->publish_state(restart_attempts_);
 
     power_cycle();
 }
@@ -180,7 +184,8 @@ void WatchdogComponent::loop() {
     
     if (restart_state_ == RestartState::BACKOFF_WAIT) {
 
-        if (millis() < next_restart_allowed_)
+        // Signed subtraction remains correct when millis() wraps around.
+        if (static_cast<int32_t>(millis() - next_restart_allowed_) < 0)
             return;
 
         ESP_LOGI(TAG, "Backoff expired - resuming monitoring");
@@ -371,6 +376,9 @@ void WatchdogComponent::loop() {
     
 }
 uint32_t WatchdogComponent::calculate_backoff() const {
+
+    if (!reboot_backoff_)
+        return 0;
 
     if (restart_attempts_ <= 1)
         return 0;

@@ -72,7 +72,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_REBOOT_BACKOFF, default=True): cv.boolean,
         cv.Optional(CONF_REBOOT_BACKOFF_INITIAL, default="5min"): cv.positive_time_period_milliseconds,
         cv.Optional(CONF_REBOOT_BACKOFF_MAX, default="60min"): cv.positive_time_period_milliseconds,
-        cv.Optional(CONF_REBOOT_BACKOFF_MULTIPLIER, default=2.0): cv.float_,
+        cv.Optional(CONF_REBOOT_BACKOFF_MULTIPLIER, default=2.0): cv.float_range(min=1.0),
         cv.Optional(CONF_MAINTENANCE_SWITCH): cv.use_id(switch.Switch),
         cv.Optional(CONF_PING_INTERVAL, default="60s"): cv.positive_time_period_milliseconds
 
@@ -117,6 +117,8 @@ async def to_code(config):
     cg.add(var.set_startup_grace_time(config[CONF_STARTUP_GRACE_TIME]))
     cg.add(var.set_gateway(config[CONF_GATEWAY]))
     cg.add(var.set_hosts(config[CONF_HOSTS]))
+    cg.add(var.set_ping_interval(config[CONF_PING_INTERVAL]))
+    cg.add(var.set_reboot_backoff(config[CONF_REBOOT_BACKOFF]))
     if config[CONF_REBOOT_BACKOFF]:
         cg.add(var.set_backoff_initial_time(config[CONF_REBOOT_BACKOFF_INITIAL]))
         cg.add(var.set_backoff_max_time(config[CONF_REBOOT_BACKOFF_MAX]))

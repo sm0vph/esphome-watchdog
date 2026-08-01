@@ -60,7 +60,7 @@ Add the external component to your ESPHome configuration.
 
 ```yaml
 external_components:
-  - source: github://sm0vph/esphome-watchdog@v1.0.0
+  - source: github://sm0vph/esphome-watchdog@main
 ```
 
 ## Example configuration
@@ -139,11 +139,11 @@ Example:
 
 | Restart | Delay |
 |---------:|------:|
-| 1 | 30 seconds |
-| 2 | 60 seconds |
-| 3 | 2 minutes |
-| 4 | 4 minutes |
-| 5 | 8 minutes |
+| 1 | No delay |
+| 2 | 30 seconds |
+| 3 | 1 minute |
+| 4 | 2 minutes |
+| 5 | 4 minutes |
 | 6+ | 10 minutes (maximum) |
 
 The backoff counter is automatically reset once internet connectivity has been restored.

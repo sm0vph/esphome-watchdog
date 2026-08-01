@@ -1,5 +1,9 @@
 #pragma once
 
+#include <algorithm>
+#include <string>
+#include <vector>
+
 #include "esphome/core/component.h"
 #include <AsyncPing.h>
 #include "esphome/components/sensor/sensor.h"
@@ -34,9 +38,9 @@ public:
     void set_backoff_initial_time(uint32_t ms);
     void set_backoff_max_time(uint32_t ms);
     void set_backoff_multiplier(float multiplier);
-    void set_maintenance_mode(bool maintenance_mode);
     void set_maintenance_switch(switch_::Switch *sw);
     void set_ping_interval(uint32_t ms) {ping_interval_ = ms;}
+    void set_reboot_backoff(bool enabled) { reboot_backoff_ = enabled; }
 
 private:
     enum class PingStage {
@@ -100,6 +104,7 @@ private:
     uint32_t backoff_initial_time_{300000};     // 5 min
     uint32_t backoff_max_time_{3600000};        // 60 min
     float backoff_multiplier_{2.0f};
+    bool reboot_backoff_{true};
 
     uint32_t restart_attempts_{0};
     uint32_t next_restart_allowed_{0};
