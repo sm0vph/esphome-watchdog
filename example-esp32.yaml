@@ -10,7 +10,7 @@ esp32:
     type: arduino
 
 external_components:
-  - source: github://sm0vph/esphome-watchdog@refactor/platform-independent-connectivity
+  - source: github://sm0vph/esphome-watchdog@main
     components: [internet_watchdog]
 
 logger:
