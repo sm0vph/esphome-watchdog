@@ -37,7 +37,7 @@ time:
   - platform: sntp
 
 internet_watchdog:
-  id: internet_watchdog
+  id: watchdog
 
   relay: relay
 
@@ -87,9 +87,46 @@ button:
     name: Restart modem
     icon: mdi:restart
     on_press:
+      - script.execute: power_cycle
+
+binary_sensor:
+  - platform: gpio
+    id: device_button
+    name: Device button
+    pin:
+      number: GPIO13
+      inverted: true
+    filters:
+      - delayed_on: 20ms
+      - delayed_off: 20ms
+    on_click:
+      - min_length: 50ms
+        max_length: 999ms
+        then:
+          - switch.toggle: maintenance_switch
+      - min_length: 1s
+        max_length: 10s
+        then:
+          - script.execute: power_cycle
+
+script:
+  - id: power_cycle
+    mode: restart
+    then:
       - switch.turn_off: relay
       - delay: 20s
       - switch.turn_on: relay
+
+status_led:
+  pin:
+    number: GPIO2
+    inverted: true
+
+output:
+  - platform: gpio
+    id: red_status_led
+    pin: GPIO0
+    inverted: true
 
 switch:
   - platform: gpio
@@ -102,3 +139,7 @@ switch:
     id: maintenance_switch
     name: Maintenance mode
     optimistic: true
+    on_turn_on:
+      - output.turn_on: red_status_led
+    on_turn_off:
+      - output.turn_off: red_status_led
