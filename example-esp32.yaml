@@ -1,0 +1,46 @@
+# Minimal ESP32 example for the platform-independent Internet watchdog.
+
+esphome:
+  name: internet-watchdog-esp32
+  friendly_name: Internet Watchdog ESP32
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+external_components:
+  - source: github://sm0vph/esphome-watchdog@refactor/platform-independent-connectivity
+    components: [internet_watchdog]
+
+logger:
+
+wifi:
+  ssid: "YOUR_WIFI"
+  password: "YOUR_PASSWORD"
+
+internet_watchdog:
+  id: watchdog
+  relay: relay
+
+  dns_servers:
+    - 1.1.1.1
+    - 8.8.8.8
+    - 9.9.9.9
+  check_domain: example.com
+  dns_timeout: 2s
+
+  startup_grace_time: 2min
+  power_off_time: 20s
+  boot_wait_time: 3min
+  check_interval: 1min
+  failure_threshold: 2
+  network_connect_timeout: 7min
+  device_reboot_before_power_cycle: true
+
+switch:
+  - platform: gpio
+    id: relay
+    name: Relay
+    pin: GPIO23
+    restore_mode: RESTORE_DEFAULT_ON
