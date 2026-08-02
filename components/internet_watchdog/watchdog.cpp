@@ -205,6 +205,23 @@ void WatchdogComponent::start_ping(const char *host) {
 }
 
 void WatchdogComponent::loop() {
+    const bool maintenance_active =
+        maintenance_switch_ != nullptr && maintenance_switch_->state;
+
+    if (maintenance_active && !maintenance_was_active_) {
+        maintenance_started_at_ = millis();
+        maintenance_was_active_ = true;
+        ESP_LOGI(TAG, "Maintenance mode enabled");
+    } else if (!maintenance_active) {
+        maintenance_was_active_ = false;
+    }
+
+    if (maintenance_active && maintenance_timeout_ > 0 &&
+        millis() - maintenance_started_at_ >= maintenance_timeout_) {
+        ESP_LOGI(TAG, "Maintenance mode timeout expired, resuming normal operation");
+        maintenance_switch_->turn_off();
+        maintenance_was_active_ = false;
+    }
     
     if (restart_state_ == RestartState::BACKOFF_WAIT) {
 

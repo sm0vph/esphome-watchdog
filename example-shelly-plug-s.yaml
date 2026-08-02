@@ -63,6 +63,7 @@ internet_watchdog:
   wifi_reboot_before_power_cycle: true
 
   maintenance_switch: maintenance_switch
+  maintenance_timeout: 1h
 
   status:
     name: Watchdog Status

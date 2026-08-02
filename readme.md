@@ -17,7 +17,9 @@ Designed for ESP8266 devices such as the Shelly Plug S Gen1, but should work wit
 - Startup grace period
 - Home Assistant status sensors
 - Maintenance mode switch
-- Manual restart button
+- Manual power-cycle button
+- Shelly Plug S hardware button controls
+- Red maintenance-mode indicator on Shelly Plug S
 - Detailed logging
 
 ## How it works
@@ -86,6 +88,7 @@ internet_watchdog:
   
 
   maintenance_switch: modem_maintenance
+  maintenance_timeout: 1h
 ```
 
 ## Configuration
@@ -107,6 +110,7 @@ internet_watchdog:
 | `reboot_backoff_multiplier` | Backoff multiplier |
 | `reboot_backoff_max` | Maximum backoff delay |
 | `maintenance_switch` | Home Assistant switch disabling automatic restarts |
+| `maintenance_timeout` | Optional maximum duration for maintenance mode. When the timeout expires, normal operation resumes automatically. If omitted, maintenance mode remains enabled until manually disabled. |
 
 ## Home Assistant entities
 
@@ -130,6 +134,18 @@ When maintenance mode is enabled:
 - Automatic restarts are disabled.
 - Connectivity monitoring continues.
 - Status information continues to update.
+- If `maintenance_timeout` is configured, normal operation resumes automatically when the timeout expires.
+
+## Shelly Plug S controls
+
+The included `example-shelly-plug-s.yaml` configures the physical button and LEDs on a Shelly Plug S Gen1:
+
+- A short press (50–999 ms) toggles maintenance mode.
+- A long press (1–10 seconds) power cycles the connected modem or router when the button is released.
+- The red LED (GPIO0) is on while maintenance mode is enabled.
+- The blue LED (GPIO2) remains the ESPHome status LED.
+
+The `Restart modem` button exposed to Home Assistant uses the same power-cycle script as a long press. The relay is no longer toggled directly by the physical button.
 
 
 ## Backoff

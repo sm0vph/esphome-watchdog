@@ -40,6 +40,7 @@ public:
     void set_backoff_max_time(uint32_t ms);
     void set_backoff_multiplier(float multiplier);
     void set_maintenance_switch(switch_::Switch *sw);
+    void set_maintenance_timeout(uint32_t ms) { maintenance_timeout_ = ms; }
     void set_ping_interval(uint32_t ms) {ping_interval_ = ms;}
     void set_reboot_backoff(bool enabled) { reboot_backoff_ = enabled; }
     void set_failure_threshold(uint32_t threshold) { failure_threshold_ = threshold; }
@@ -140,6 +141,9 @@ private:
     uint32_t calculate_backoff() const;
 
     switch_::Switch *maintenance_switch_{nullptr};
+    uint32_t maintenance_timeout_{0};
+    uint32_t maintenance_started_at_{0};
+    bool maintenance_was_active_{false};
 
    
 };
